@@ -19,6 +19,8 @@ for i in range(10):
 
 and you'll find a directory `logs` that you can point TensorBoard to!
 
+![](tensorboard_screenshot.png)
+
 Based on heavily stripped-down code from OpenAI's [baselines](https://github.com/openai/baselines).
 
 ## Installation
@@ -30,4 +32,4 @@ Based on heavily stripped-down code from OpenAI's [baselines](https://github.com
 On import, `easy_tf_log` sets up a logger saving to a directory `logs`. To
 change the directory it logs to, call `easy_tf_log.set_dir(log_dir)`.
 
-`logkv(key, value)`: 
+`logkv(key, value)`: log `value` with name `key`.
