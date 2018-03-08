@@ -14,7 +14,7 @@ class Logger(object):
     def __init__(self, log_dir):
         os.makedirs(log_dir, exist_ok=True)
         self.dir = log_dir
-        self.step = 1
+        self.key_steps = {}
         prefix = 'events'
         path = osp.join(osp.abspath(log_dir), prefix)
         self.event_pb2 = event_pb2
@@ -27,10 +27,12 @@ class Logger(object):
             return tf.Summary.Value(**kwargs)
         summary = tf.Summary(value=[summary_val(k, v)])
         event = self.event_pb2.Event(wall_time=time.time(), summary=summary)
-        event.step = self.step
+        if k not in self.key_steps:
+            self.key_steps[k] = 1
+        event.step = self.key_steps[k]
         self.writer.WriteEvent(event)
         self.writer.Flush()
-        self.step += 1
+        self.key_steps[k] += 1
 
     def close(self):
         if self.writer:
