@@ -40,12 +40,11 @@ class Logger(object):
             self.writer = None
 
 
-Logger.DEFAULT = Logger(log_dir='logs')
-
-
 def set_dir(log_dir):
     Logger.DEFAULT = Logger(log_dir)
 
 
 def logkv(key, val):
+    if not Logger.DEFAULT:
+        Logger.DEFAULT = Logger(log_dir='logs')
     Logger.DEFAULT.logkv(key, val)
