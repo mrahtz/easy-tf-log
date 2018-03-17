@@ -26,9 +26,12 @@ Based on heavily stripped-down code from OpenAI's [baselines](https://github.com
 ## Installation
 
 For TensorFlow without GPU support:
-`pip install git+https://github.com/mrahtz/easy-tf-log[tf]`
+
+`pip install git+https://github.com/mrahtz/easy-tf-log#egg=easy-tf-log[tf]`
+
 For TensorFlow *with* GPU support:
-`pip install git+https://github.com/mrahtz/easy-tf-log[tf-gpu]`
+
+`pip install git+https://github.com/mrahtz/easy-tf-log#egg=easy-tf-log[tf_gpu]`
 
 ## Usage
 
