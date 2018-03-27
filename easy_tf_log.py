@@ -45,7 +45,7 @@ def set_dir(log_dir):
     Logger.DEFAULT = Logger(log_dir)
 
 
-def log(key, value):
+def tflog(key, value):
     if not Logger.DEFAULT:
         Logger.DEFAULT = Logger(log_dir='logs')
     Logger.DEFAULT.logkv(key, value)

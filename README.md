@@ -7,21 +7,25 @@ usual steps to set up TensorFlow logging properly.
 `easy_tf_log` is a simple module to do just that. Just
 
 ```
-from easy_tf_log import log
+from easy_tf_log import tflog
 ```
 
 then you can do e.g.
 
 ```
 for i in range(10):
-    log('really_interesting_variable_name', i)
+    tflog('really_interesting_variable_name', i)
 ```
 
-and you'll find a directory `logs` that you can point TensorBoard to!
+and you'll find a directory `logs` that you can point TensorBoard to:
+
+`$ tensorboard --logdir logs`
+
+to get:
 
 ![](tensorboard_screenshot.png)
 
-Based on heavily stripped-down code from OpenAI's [baselines](https://github.com/openai/baselines).
+Based on logging code from OpenAI's [baselines](https://github.com/openai/baselines).
 
 ## Installation
 
@@ -38,6 +42,6 @@ For TensorFlow *with* GPU support:
 On import, `easy_tf_log` sets up a logger saving to a directory `logs`. To
 change the directory it logs to, call `easy_tf_log.set_dir(log_dir)`.
 
-`log(key, value)`: log `value` with name `key`.
+`tflog(key, value)`: log `value` with name `key`.
 
 See [`demo.py`](demo.py) for a full demo.
