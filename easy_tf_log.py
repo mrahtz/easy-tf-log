@@ -27,6 +27,7 @@ class Logger(object):
             return tf.Summary.Value(**kwargs)
         summary = tf.Summary(value=[summary_val(k, v)])
         event = self.event_pb2.Event(wall_time=time.time(), summary=summary)
+        # Use a separate step counter for each key
         if k not in self.key_steps:
             self.key_steps[k] = 1
         event.step = self.key_steps[k]
@@ -44,7 +45,7 @@ def set_dir(log_dir):
     Logger.DEFAULT = Logger(log_dir)
 
 
-def logkv(key, val):
+def log(key, value):
     if not Logger.DEFAULT:
         Logger.DEFAULT = Logger(log_dir='logs')
-    Logger.DEFAULT.logkv(key, val)
+    Logger.DEFAULT.logkv(key, value)
