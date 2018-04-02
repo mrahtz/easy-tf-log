@@ -1,27 +1,26 @@
 # Easy TensorFlow Logging
 
-It happens to me all the time that I'm prototyping something and just want to
-be able to _magically_ graph some value from code without going through all the
-usual steps to set up TensorFlow logging properly.
+Are you prototyping something and want to be able to _magically_ graph some value
+without going through all the usual steps to set up TensorFlow logging properly?
 
-`easy_tf_log` is a simple module to do just that. Just
+`easy_tf_log` is a simple module to do just that.
 
 ```
 from easy_tf_log import tflog
 ```
 
-then you can do e.g.
+then you can do
 
 ```
 for i in range(10):
     tflog('really_interesting_variable_name', i)
 ```
 
-and you'll find a directory `logs` that you can point TensorBoard to:
+and you'll find a directory `logs` that you can point TensorBoard to
 
 `$ tensorboard --logdir logs`
 
-to get:
+to get
 
 ![](tensorboard_screenshot.png)
 
