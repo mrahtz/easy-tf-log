@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import easy_tf_log
 
 for i in range(10):
