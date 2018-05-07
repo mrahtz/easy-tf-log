@@ -1,7 +1,5 @@
 # Easy TensorFlow Logging
 
-[![CircleCI](https://circleci.com/gh/mrahtz/easy-tf-log/tree/master.svg?style=svg&circle-token=4750ebc3733b859421a6453d2fe15c363480fa1c)](https://circleci.com/gh/mrahtz/easy-tf-log/tree/master)
-
 Are you prototyping something and want to be able to _magically_ graph some value
 without going through all the usual steps to set up TensorFlow logging properly?
 
@@ -46,3 +44,8 @@ change the directory it logs to, call `easy_tf_log.set_dir(log_dir)`.
 `tflog(key, value)`: log `value` with name `key`.
 
 See [`demo.py`](demo.py) for a full demo.
+
+## Tests
+
+Tests are in `tests.py`. CircleCI status:
+[![CircleCI](https://circleci.com/gh/mrahtz/easy-tf-log/tree/master.svg?style=svg&circle-token=4750ebc3733b859421a6453d2fe15c363480fa1c)](https://circleci.com/gh/mrahtz/easy-tf-log/tree/master)
