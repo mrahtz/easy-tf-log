@@ -47,5 +47,5 @@ See [`demo.py`](demo.py) for a full demo.
 
 ## Tests
 
-Tests are in `tests.py`. CircleCI status:
+Tests are in `tests.py`. CircleCI status:  
 [![CircleCI](https://circleci.com/gh/mrahtz/easy-tf-log/tree/master.svg?style=svg&circle-token=4750ebc3733b859421a6453d2fe15c363480fa1c)](https://circleci.com/gh/mrahtz/easy-tf-log/tree/master)
