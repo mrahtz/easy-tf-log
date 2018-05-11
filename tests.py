@@ -82,16 +82,16 @@ class TestEasyTFLog(unittest.TestCase):
         event_filename = osp.join('logs', os.listdir('logs')[0])
         event_n = 0
         for event in tf.train.summary_iterator(event_filename):
-            if event_n == 0:
+            if event_n == 0:  # metadata
                 event_n += 1
                 continue
             if event_n <= 10:
-                self.assertEqual(event.step, event_n)
+                self.assertEqual(event.step, event_n - 1)
                 self.assertEqual(event.summary.value[0].tag, "foo")
                 self.assertEqual(event.summary.value[0].simple_value,
                                  float(event_n - 1))
             if event_n > 10 and event_n <= 20:
-                self.assertEqual(event.step, event_n - 10)
+                self.assertEqual(event.step, event_n - 10 - 1)
                 self.assertEqual(event.summary.value[0].tag, "bar")
                 self.assertEqual(event.summary.value[0].simple_value,
                                  float(event_n - 10 - 1))

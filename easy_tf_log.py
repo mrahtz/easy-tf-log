@@ -28,7 +28,7 @@ class Logger(object):
         event = event_pb2.Event(wall_time=time.time(), summary=summary)
         # Use a separate step counter for each key
         if k not in self.key_steps:
-            self.key_steps[k] = 1
+            self.key_steps[k] = 0
         event.step = self.key_steps[k]
         self.writer.add_event(event)
         self.writer.flush()
