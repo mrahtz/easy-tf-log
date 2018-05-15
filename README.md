@@ -39,7 +39,10 @@ To change the directory, call `easy_tf_log.set_dir(log_dir)`.
 
 `easy-tf-log` also supports writing using an existing `EventFileWriter` created
 by e.g. an instance of `tf.summary.FileWriter`: call
-`easy_tf_log.set_writer(file_writer.event_writer)`.
+`easy_tf_log.set_writer(file_writer.event_writer)`. (However, not that because
+`EventsFileWriter` uses a sub-thread to write events, this is not fork-safe. If
+you set this in one process and then try to use `easy-tf-log` a child process,
+it will hang.)
 
 To log a value, use `tflog(key, value)`.
 
