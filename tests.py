@@ -3,7 +3,9 @@ import os
 import os.path as osp
 import tempfile
 import unittest
+from multiprocessing import Queue, Process
 
+import queue
 import tensorflow as tf
 
 import easy_tf_log
@@ -96,6 +98,21 @@ class TestEasyTFLog(unittest.TestCase):
                 self.assertEqual(event.summary.value[0].simple_value,
                                  float(event_n - 10 - 1))
             event_n += 1
+
+    def test_fork(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            easy_tf_log.set_dir(temp_dir)
+
+            def f(queue):
+                easy_tf_log.tflog('foo', 0)
+                queue.put(True)
+
+            q = Queue()
+            Process(target=f, args=[q], daemon=True).start()
+            try:
+                q.get(timeout=1.0)
+            except queue.Empty:
+                self.fail("Process did not return")
 
 
 if __name__ == '__main__':
