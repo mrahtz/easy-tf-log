@@ -1,9 +1,27 @@
 import os
+import os.path as osp
 import time
 
 import tensorflow as tf
 from tensorflow.core.util import event_pb2
-from tensorflow.python.summary.writer.event_file_writer import EventFileWriter
+from tensorflow.python import pywrap_tensorflow
+from tensorflow.python.util import compat
+
+
+class EventsFileWriterWrapper:
+    """
+    Rename EventsFileWriter's flush() and add_event() methods to be consistent
+    with EventsWriter's methods.
+    """
+
+    def __init__(self, events_file_writer):
+        self.writer = events_file_writer
+
+    def WriteEvent(self, event):
+        self.writer.add_event(event)
+
+    def Flush(self):
+        self.writer.flush()
 
 
 class Logger(object):
@@ -14,10 +32,16 @@ class Logger(object):
 
     def set_log_dir(self, log_dir):
         os.makedirs(log_dir, exist_ok=True)
-        self.writer = EventFileWriter(log_dir)
+        path = osp.join(log_dir, "events")
+        # Why don't we just use an EventsFileWriter?
+        # By default, we want to be fork-safe - we want to work even if we
+        # create the writer in one process and try to use it in a forked
+        # process. And because EventsFileWriter uses a subthread to do the
+        # actual writing, EventsFileWriter /isn't/ fork-safe.
+        self.writer = pywrap_tensorflow.EventsWriter(compat.as_bytes(path))
 
     def set_writer(self, writer):
-        self.writer = writer
+        self.writer = EventsFileWriterWrapper(writer)
 
     def logkv(self, k, v):
         def summary_val(k, v):
@@ -30,8 +54,8 @@ class Logger(object):
         if k not in self.key_steps:
             self.key_steps[k] = 0
         event.step = self.key_steps[k]
-        self.writer.add_event(event)
-        self.writer.flush()
+        self.writer.WriteEvent(event)
+        self.writer.Flush()
         self.key_steps[k] += 1
 
     def close(self):
