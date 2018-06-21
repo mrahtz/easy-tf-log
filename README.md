@@ -44,7 +44,9 @@ by e.g. an instance of `tf.summary.FileWriter`: call
 you set this in one process and then try to use `easy-tf-log` a child process,
 it will hang.)
 
-To log a value, use `tflog(key, value)`.
+To log a value, use `tflog(key, value)`. The step number for each key starts from zero
+and increments automatically. To set the step manually, specify the `step`
+argument.
 
 See [`demo.py`](demo.py) for a full demo.
 

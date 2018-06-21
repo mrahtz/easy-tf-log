@@ -11,3 +11,5 @@ easy_tf_log.set_dir('logs2')
 
 for k in range(20, 30):
     easy_tf_log.tflog('baz', k)
+for l in range(5):
+    easy_tf_log.tflog('qux', l, step=(10 * l))
