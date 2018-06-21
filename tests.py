@@ -76,28 +76,56 @@ class TestEasyTFLog(unittest.TestCase):
         Log a few values and check that the event file contain the expected
         values.
         """
-        for i in range(10):
-            easy_tf_log.tflog('foo', i)
-        for i in range(10):
-            easy_tf_log.tflog('bar', i)
+        with tempfile.TemporaryDirectory() as temp_dir:
+            os.chdir(temp_dir)
 
-        event_filename = osp.join('logs', os.listdir('logs')[0])
-        event_n = 0
-        for event in tf.train.summary_iterator(event_filename):
-            if event_n == 0:  # metadata
+            for i in range(10):
+                easy_tf_log.tflog('foo', i)
+            for i in range(10):
+                easy_tf_log.tflog('bar', i)
+
+            event_filename = osp.join('logs', os.listdir('logs')[0])
+            event_n = 0
+            for event in tf.train.summary_iterator(event_filename):
+                if event_n == 0:  # metadata
+                    event_n += 1
+                    continue
+                if event_n <= 10:
+                    self.assertEqual(event.step, event_n - 1)
+                    self.assertEqual(event.summary.value[0].tag, "foo")
+                    self.assertEqual(event.summary.value[0].simple_value,
+                                     float(event_n - 1))
+                if event_n > 10 and event_n <= 20:
+                    self.assertEqual(event.step, event_n - 10 - 1)
+                    self.assertEqual(event.summary.value[0].tag, "bar")
+                    self.assertEqual(event.summary.value[0].simple_value,
+                                     float(event_n - 10 - 1))
                 event_n += 1
-                continue
-            if event_n <= 10:
-                self.assertEqual(event.step, event_n - 1)
-                self.assertEqual(event.summary.value[0].tag, "foo")
-                self.assertEqual(event.summary.value[0].simple_value,
-                                 float(event_n - 1))
-            if event_n > 10 and event_n <= 20:
-                self.assertEqual(event.step, event_n - 10 - 1)
-                self.assertEqual(event.summary.value[0].tag, "bar")
-                self.assertEqual(event.summary.value[0].simple_value,
-                                 float(event_n - 10 - 1))
-            event_n += 1
+
+    def test_explicit_step(self):
+        """
+        Log a few values explicitly setting the step number.
+        """
+        with tempfile.TemporaryDirectory() as temp_dir:
+            os.chdir(temp_dir)
+
+            for i in range(5):
+                easy_tf_log.tflog('foo', i, step=(10 * i))
+            # These ones should continue from where the previous ones left off
+            for i in range(5):
+                easy_tf_log.tflog('foo', i)
+
+            event_filename = osp.join('logs', os.listdir('logs')[0])
+            event_n = 0
+            for event in tf.train.summary_iterator(event_filename):
+                if event_n == 0:  # metadata
+                    event_n += 1
+                    continue
+                if event_n <= 5:
+                    self.assertEqual(event.step, 10 * (event_n - 1))
+                if event_n > 5 and event_n <= 10:
+                    self.assertEqual(event.step, 40 + (event_n - 5))
+                event_n += 1
 
     def test_fork(self):
         with tempfile.TemporaryDirectory() as temp_dir:

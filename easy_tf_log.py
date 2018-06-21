@@ -43,7 +43,7 @@ class Logger(object):
     def set_writer(self, writer):
         self.writer = EventsFileWriterWrapper(writer)
 
-    def logkv(self, k, v):
+    def logkv(self, k, v, step=None):
         def summary_val(k, v):
             kwargs = {'tag': k, 'simple_value': float(v)}
             return tf.Summary.Value(**kwargs)
@@ -53,6 +53,8 @@ class Logger(object):
         # Use a separate step counter for each key
         if k not in self.key_steps:
             self.key_steps[k] = 0
+        if step is not None:
+            self.key_steps[k] = step
         event.step = self.key_steps[k]
         self.writer.WriteEvent(event)
         self.writer.Flush()
@@ -74,7 +76,7 @@ def set_writer(writer):
     Logger.DEFAULT.set_writer(writer)
 
 
-def tflog(key, value):
+def tflog(key, value, step=None):
     if not Logger.DEFAULT:
         set_dir('logs')
-    Logger.DEFAULT.logkv(key, value)
+    Logger.DEFAULT.logkv(key, value, step)
