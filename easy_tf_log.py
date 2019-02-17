@@ -27,8 +27,18 @@ class EventsFileWriterWrapper:
 class Logger(object):
     DEFAULT = None
 
-    def __init__(self):
+    def __init__(self, log_dir=None, writer=None):
         self.key_steps = {}
+
+        if log_dir is None and writer is None:
+            log_dir = 'logs'
+            self.set_log_dir(log_dir)
+        elif log_dir is not None and writer is None:
+            self.set_log_dir(log_dir)
+        elif log_dir is None and writer is not None:
+            self.set_writer(writer)
+        else:
+            raise ValueError("Only one of log_dir or writer must be specified")
 
     def set_log_dir(self, log_dir):
         os.makedirs(log_dir, exist_ok=True)
@@ -67,13 +77,11 @@ class Logger(object):
 
 
 def set_dir(log_dir):
-    Logger.DEFAULT = Logger()
-    Logger.DEFAULT.set_log_dir(log_dir)
+    Logger.DEFAULT = Logger(log_dir=log_dir)
 
 
 def set_writer(writer):
-    Logger.DEFAULT = Logger()
-    Logger.DEFAULT.set_writer(writer)
+    Logger.DEFAULT = Logger(writer=writer)
 
 
 def tflog(key, value, step=None):
