@@ -2,6 +2,7 @@ import os
 import os.path as osp
 import time
 
+import numpy as np
 import tensorflow as tf
 from tensorflow.core.util import event_pb2
 from tensorflow.python import pywrap_tensorflow
@@ -69,6 +70,10 @@ class Logger(object):
         self.writer.WriteEvent(event)
         self.writer.Flush()
         self.key_steps[k] += 1
+
+    def log_list_stats(self, k, l):
+        for suffix, f in [('min', np.min), ('max', np.max), ('avg', np.mean), ('std', np.std)]:
+            self.logkv(k + '_' + suffix, f(l))
 
     def close(self):
         if self.writer:
