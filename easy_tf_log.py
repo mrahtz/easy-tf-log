@@ -30,6 +30,7 @@ class Logger(object):
 
     def __init__(self, log_dir=None, writer=None):
         self.key_steps = {}
+        self.rate_values = {}
 
         if log_dir is None and writer is None:
             log_dir = 'logs'
@@ -74,6 +75,15 @@ class Logger(object):
     def log_list_stats(self, k, l):
         for suffix, f in [('min', np.min), ('max', np.max), ('avg', np.mean), ('std', np.std)]:
             self.logkv(k + '_' + suffix, f(l))
+
+    def measure_rate(self, k, v, tag=None):
+        if k in self.rate_values:
+            last_val, last_time = self.rate_values[k]
+            interval = time.time() - last_time
+            if tag is None:
+                tag = k + '_rate'
+            self.logkv(tag, (v - last_val) / interval)
+        self.rate_values[k] = (v, time.time())
 
     def close(self):
         if self.writer:

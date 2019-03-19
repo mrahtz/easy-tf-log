@@ -1,11 +1,13 @@
 import importlib
 import os
 import os.path as osp
+import queue
 import tempfile
+import time
 import unittest
 from multiprocessing import Queue, Process
 
-import queue
+import numpy as np
 import tensorflow as tf
 
 import easy_tf_log
@@ -141,6 +143,27 @@ class TestEasyTFLog(unittest.TestCase):
                 q.get(timeout=1.0)
             except queue.Empty:
                 self.fail("Process did not return")
+
+    def test_measure_rate(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            logger = easy_tf_log.Logger(log_dir=temp_dir)
+
+            logger.measure_rate('foo', 0)
+            time.sleep(1)
+            logger.measure_rate('foo', 10)
+            time.sleep(1)
+            logger.measure_rate('foo', 25)
+
+            event_filename = list(os.scandir(temp_dir))[0].path
+            event_n = 0
+            rates = []
+            for event in tf.train.summary_iterator(event_filename):
+                if event_n == 0:  # metadata
+                    event_n += 1
+                    continue
+                rates.append(event.summary.value[0].simple_value)
+                event_n += 1
+            np.testing.assert_array_almost_equal(rates, [10., 15.], decimal=1)
 
 
 if __name__ == '__main__':
