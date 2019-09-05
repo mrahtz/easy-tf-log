@@ -51,3 +51,12 @@ and increments automatically. To set the step manually, specify the `step`
 argument.
 
 See [`demo.py`](demo.py) for a full demo.
+
+## Doc
+
+- `tflog(key, value, step)` - log `value` for graph `key`. 
+    - `key (string)`: name of the graph to log the values to. 
+    - `value (float, string)`: values to log on the y-axis. If string, it must be castable to a float.
+    - `step (int)`: is an optional variable that sets the value for x-axis. If not given, step` will be incremented by 1 every time `tflog` is called.
+- `set_dir(log_dir)` - set log directory to `log_dir`. 
+    - `log_dir (string)`: can either be a relative or absolute path. If `log_dir` is not present, it will be created before saving logs.
