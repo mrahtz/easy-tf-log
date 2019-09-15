@@ -1,6 +1,7 @@
 import os
 import os.path as osp
 import time
+from typing import Union
 
 import numpy as np
 import tensorflow as tf
@@ -31,6 +32,7 @@ class Logger(object):
     def __init__(self, log_dir=None, writer=None):
         self.key_steps = {}
         self.rate_values = {}
+        self.writer = None  # type: Union[None, pywrap_tensorflow.EventsWriter, tf.summary.FileWriter]
 
         if log_dir is None and writer is None:
             log_dir = 'logs'
