@@ -53,6 +53,10 @@ class Logger(object):
         self.writer = pywrap_tensorflow.EventsWriter(compat.as_bytes(path))
 
     def set_writer(self, writer):
+        """
+        Set the log writer to an existing tf.summary.FileWriter instance
+        (so that you can write both TensorFlow summaries and easy_tf_log events to the same log file)
+        """
         self.writer = EventsFileWriterWrapper(writer)
 
     def logkv(self, k, v, step=None):
