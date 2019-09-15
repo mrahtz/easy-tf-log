@@ -81,18 +81,16 @@ class Logger(object):
         self.writer.Flush()
         self.key_steps[key] += 1
 
-    def log_list_stats(self, k, l):
+    def log_list_stats(self, key, values_list):
         for suffix, f in [('min', np.min), ('max', np.max), ('avg', np.mean), ('std', np.std)]:
-            self.logkv(k + '_' + suffix, f(l))
+            self.logkv(key + '_' + suffix, f(values_list))
 
-    def measure_rate(self, k, v, tag=None):
-        if k in self.rate_values:
-            last_val, last_time = self.rate_values[k]
+    def measure_rate(self, key, value):
+        if key in self.rate_values:
+            last_val, last_time = self.rate_values[key]
             interval = time.time() - last_time
-            if tag is None:
-                tag = k + '_rate'
-            self.logkv(tag, (v - last_val) / interval)
-        self.rate_values[k] = (v, time.time())
+            self.logkv(key + '_rate', (value - last_val) / interval)
+        self.rate_values[key] = (value, time.time())
 
     def close(self):
         if self.writer:
