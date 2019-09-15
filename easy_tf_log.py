@@ -60,21 +60,24 @@ class Logger(object):
         self.writer = EventsFileWriterWrapper(writer)
 
     def logkv(self, k, v, step=None):
+        self.log_key_value(k, v, step)
+
+    def log_key_value(self, key, value, step=None):
         def summary_val(k, v):
             kwargs = {'tag': k, 'simple_value': float(v)}
             return tf.Summary.Value(**kwargs)
 
-        summary = tf.Summary(value=[summary_val(k, v)])
+        summary = tf.Summary(value=[summary_val(key, value)])
         event = event_pb2.Event(wall_time=time.time(), summary=summary)
         # Use a separate step counter for each key
-        if k not in self.key_steps:
-            self.key_steps[k] = 0
+        if key not in self.key_steps:
+            self.key_steps[key] = 0
         if step is not None:
-            self.key_steps[k] = step
-        event.step = self.key_steps[k]
+            self.key_steps[key] = step
+        event.step = self.key_steps[key]
         self.writer.WriteEvent(event)
         self.writer.Flush()
-        self.key_steps[k] += 1
+        self.key_steps[key] += 1
 
     def log_list_stats(self, k, l):
         for suffix, f in [('min', np.min), ('max', np.max), ('avg', np.mean), ('std', np.std)]:
@@ -106,4 +109,4 @@ def set_writer(writer):
 def tflog(key, value, step=None):
     if not Logger.DEFAULT:
         set_dir('logs')
-    Logger.DEFAULT.logkv(key, value, step)
+    Logger.DEFAULT.log_key_value(key, value, step)
