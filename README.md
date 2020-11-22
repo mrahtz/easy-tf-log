@@ -2,6 +2,8 @@
 
 [![CircleCI](https://circleci.com/gh/mrahtz/easy-tf-log.svg?style=shield)](https://circleci.com/gh/mrahtz/easy-tf-log)
 
+**Note: NOT compatible with TensorFlow 2!** A pull request fixing this would be very gratefully accepted :)
+
 Are you prototyping something and want to be able to _magically_ graph some value
 without going through all the usual steps to set up TensorFlow logging properly?
 
