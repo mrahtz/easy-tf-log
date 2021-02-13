@@ -17,6 +17,9 @@ jobs:
 
     working_directory: ~/repo
 
+    # Need more RAM to install TensorFlow
+    resource_class: medium+
+
     steps:
       - checkout
 
