@@ -8,7 +8,7 @@ import tensorflow as tf
 from tensorflow.core.util import event_pb2
 from tensorflow.python import pywrap_tensorflow
 from tensorflow.python.util import compat
-
+from tensorflow.python._pywrap_events_writer import EventsWriter
 
 class EventsFileWriterWrapper:
     """
@@ -52,7 +52,7 @@ class Logger(object):
         # create the writer in one process and try to use it in a forked
         # process. And because EventsFileWriter uses a subthread to do the
         # actual writing, EventsFileWriter /isn't/ fork-safe.
-        self.writer = pywrap_tensorflow.EventsWriter(compat.as_bytes(path))
+        self.writer = EventsWriter(compat.as_bytes(path))
 
     def set_writer(self, writer):
         """
@@ -67,9 +67,9 @@ class Logger(object):
     def log_key_value(self, key, value, step=None):
         def summary_val(k, v):
             kwargs = {'tag': k, 'simple_value': float(v)}
-            return tf.Summary.Value(**kwargs)
+            return tf.compat.v1.Summary.Value(**kwargs)
 
-        summary = tf.Summary(value=[summary_val(key, value)])
+        summary = tf.compat.v1.Summary(value=[summary_val(key, value)])
         event = event_pb2.Event(wall_time=time.time(), summary=summary)
         # Use a separate step counter for each key
         if key not in self.key_steps:
