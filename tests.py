@@ -6,12 +6,17 @@ import tempfile
 import time
 import unittest
 from multiprocessing import Queue, Process
-
-import numpy as np
-import tensorflow.compat.v1 as tf
 import easy_tf_log
+import numpy as np
+import tensorflow
+if tensorflow.__version__ >= '2':
+    import tensorflow.compat.v1 as tf
+    from tensorflow.compat.v1.train import summary_iterator
+    tf.disable_v2_behavior()
+else:
+    import tensorflow as tf
+    from tensorflow.train import summary_iterator
 
-tf.disable_v2_behavior()
 
 class TestEasyTFLog(unittest.TestCase):
 
@@ -50,11 +55,20 @@ class TestEasyTFLog(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp_dir:
             os.chdir(temp_dir)
 
-            writer = tf.compat.v1.summary.FileWriter('logs')#tf.summary.create_file_writer('logs')
+            if tf.__version__ >= '2':
+                writer = tf.compat.v1.summary.FileWriter('logs')
+            else:
+                writer = tf.summary.FileWriter('logs')
 
             var = tf.Variable(0.0)
-            summary_op = tf.compat.v1.summary.scalar('tf_var', var)
-            sess = tf.compat.v1.Session()
+            sess = None
+            if tf.__version__ >= '2':
+                summary_op = tf.compat.v1.summary.scalar('tf_var', var)
+                sess = tf.compat.v1.Session()
+            else:
+                summary_op = tf.compat.v1.summary.scalar('tf_var', var)
+                sess = tf.Session()
+
             sess.run(var.initializer)
             summary = sess.run(summary_op)
             writer.add_summary(summary)
@@ -67,7 +81,7 @@ class TestEasyTFLog(unittest.TestCase):
             self.assertIn('events.out.tfevents', event_filename)
 
             tags = set()
-            for event in tf.compat.v1.train.summary_iterator(event_filename):
+            for event in summary_iterator(event_filename):
                 for value in event.summary.value:
                     tags.add(value.tag)
             self.assertIn('tf_var', tags)
@@ -119,7 +133,7 @@ class TestEasyTFLog(unittest.TestCase):
 
             event_filename = osp.join('logs', os.listdir('logs')[0])
             event_n = 0
-            for event in tf.compat.v1.train.summary_iterator(event_filename):
+            for event in summary_iterator(event_filename):
                 if event_n == 0:  # metadata
                     event_n += 1
                     continue
@@ -157,7 +171,7 @@ class TestEasyTFLog(unittest.TestCase):
             event_filename = list(os.scandir(temp_dir))[0].path
             event_n = 0
             rates = []
-            for event in tf.compat.v1.train.summary_iterator(event_filename):
+            for event in summary_iterator(event_filename):
                 if event_n == 0:  # metadata
                     event_n += 1
                     continue

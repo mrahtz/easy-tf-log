@@ -8,7 +8,11 @@ import tensorflow as tf
 from tensorflow.core.util import event_pb2
 from tensorflow.python import pywrap_tensorflow
 from tensorflow.python.util import compat
-from tensorflow.python._pywrap_events_writer import EventsWriter
+
+if tf.__version__ >= '2':
+    from tensorflow.python._pywrap_events_writer import EventsWriter
+else:
+    from tensorflow.python.pywrap_tensorflow import EventsWriter
 
 class EventsFileWriterWrapper:
     """
@@ -67,9 +71,16 @@ class Logger(object):
     def log_key_value(self, key, value, step=None):
         def summary_val(k, v):
             kwargs = {'tag': k, 'simple_value': float(v)}
-            return tf.compat.v1.Summary.Value(**kwargs)
+            if tf.__version__ >= '2':
+                return tf.compat.v1.Summary.Value(**kwargs)
+            else:
+                return tf.Summary.Value(**kwargs)
 
-        summary = tf.compat.v1.Summary(value=[summary_val(key, value)])
+        summary = None
+        if tf.__version__ >= '2':
+            summary = tf.compat.v1.Summary(value=[summary_val(key, value)])
+        else:
+            summary = tf.Summary(value=[summary_val(key, value)])
         event = event_pb2.Event(wall_time=time.time(), summary=summary)
         # Use a separate step counter for each key
         if key not in self.key_steps:
