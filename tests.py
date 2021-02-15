@@ -8,10 +8,10 @@ import unittest
 from multiprocessing import Queue, Process
 
 import numpy as np
-import tensorflow as tf
-
+import tensorflow.compat.v1 as tf
 import easy_tf_log
 
+tf.disable_v2_behavior()
 
 class TestEasyTFLog(unittest.TestCase):
 
@@ -50,7 +50,7 @@ class TestEasyTFLog(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp_dir:
             os.chdir(temp_dir)
 
-            writer = tf.compat.v1.summary.FileWriter('logs')
+            writer = tf.compat.v1.summary.FileWriter('logs')#tf.summary.create_file_writer('logs')
 
             var = tf.Variable(0.0)
             summary_op = tf.compat.v1.summary.scalar('tf_var', var)
