@@ -1,6 +1,8 @@
 # Easy TensorFlow Logging
 
-**Note: NOT compatible with TensorFlow 2!** A pull request fixing this would be very gratefully accepted :)
+[![Build Status](https://travis-ci.com/mrahtz/easy-tf-log.svg?branch=master)](https://travis-ci.com/mrahtz/easy-tf-log)
+
+**Note: This is mainly designed for TensorFlow 1**; the logging API in TensorFlow 2 is significantly easier than in TensorFlow 1. This module *is* compatible with TensorFlow 2, but some features may not work with eager execution.
 
 Are you prototyping something and want to be able to _magically_ graph some value
 without going through all the usual steps to set up TensorFlow logging properly?
