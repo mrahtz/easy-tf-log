@@ -6,13 +6,15 @@ from typing import Union
 import numpy as np
 import tensorflow as tf
 from tensorflow.core.util import event_pb2
-from tensorflow.python import pywrap_tensorflow
 from tensorflow.python.util import compat
 
 if tf.__version__ >= '2':
-    from tensorflow.python._pywrap_events_writer import EventsWriter
+    import tensorflow.compat.v1.summary as tf1_summary
+    import tensorflow.python._pywrap_events_writer as tf_pywrap
 else:
-    from tensorflow.python.pywrap_tensorflow import EventsWriter
+    import tensorflow.summary as tf1_summary
+    import tensorflow.python.pywrap_tensorflow as tf_pywrap
+
 
 class EventsFileWriterWrapper:
     """
@@ -36,7 +38,7 @@ class Logger(object):
     def __init__(self, log_dir=None, writer=None):
         self.key_steps = {}
         self.rate_values = {}
-        self.writer = None  # type: Union[None, pywrap_tensorflow.EventsWriter, tf.summary.FileWriter]
+        self.writer = None  # type: Union[None, tf_pywrap.EventsWriter, tf1_summary.FileWriter]
 
         if log_dir is None and writer is None:
             log_dir = 'logs'
@@ -56,11 +58,11 @@ class Logger(object):
         # create the writer in one process and try to use it in a forked
         # process. And because EventsFileWriter uses a subthread to do the
         # actual writing, EventsFileWriter /isn't/ fork-safe.
-        self.writer = EventsWriter(compat.as_bytes(path))
+        self.writer = tf_pywrap.EventsWriter(compat.as_bytes(path))
 
-    def set_writer(self, writer):
+    def set_writer(self, writer: tf1_summary.FileWriter):
         """
-        Set the log writer to an existing tf.summary.FileWriter instance
+        Set the log writer to an existing tf1_summary.FileWriter instance
         (so that you can write both TensorFlow summaries and easy_tf_log events to the same log file)
         """
         self.writer = EventsFileWriterWrapper(writer)
