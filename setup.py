@@ -7,7 +7,7 @@ with open('README.md', encoding='utf-8') as f:
 
 setup(
     name='easy_tf_log',
-    version='1.11',
+    version='1.12',
     description='TensorFlow logging made easy',
     long_description=long_description,
     long_description_content_type='text/markdown',
