@@ -15,5 +15,6 @@ setup(
     author='Matthew Rahtz',
     author_email='matthew.rahtz@gmail.com',
     keywords='tensorflow graph graphs graphing',
-    py_modules=['easy_tf_log']
+    py_modules=['easy_tf_log'],
+    install_requires=['numpy'],
 )
